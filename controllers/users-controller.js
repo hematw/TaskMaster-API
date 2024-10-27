@@ -1,12 +1,13 @@
 import NotFoundError from "../errors/not-found.js";
 import UnauthorizedError from "../errors/unauthorized.js";
 import User from "../models/User.js";
+import deleteOldProfile from "../utils/delete-old-profile.js";
 
 // Get all users data
 export const getAllUsers = async (req, res) => {
   const users = await User.find().select("firstName lastName profile");
   if (users.length) {
-    return res.status(200).json({ success: true, users });
+    return res.status(200).json({ users });
   }
   throw NotFoundError("No user exists!");
 };
@@ -35,19 +36,32 @@ export const updateUser = async (req, res) => {
     user.dob = dob ? dob : user.dob;
     user.country = country ? country : user.country;
     user.password = newPassword ? newPassword : user.password;
-    
-    const profileImagePath =
-      `${req.protocol}://${req.hostname}:${process.env.PORT}` +
-      req.file?.destination
-        .replace("public", "")
-        .concat("/" + req.file?.filename);
-    user.profile = profileImagePath;
+
+    deleteOldProfile(user.profile)
+
+    if (req.file) {
+      const profileImagePath =
+        `${req.protocol}://${req.hostname}:${process.env.PORT}` +
+        req.file?.destination
+          .replace("public", "")
+          .concat("/" + req.file?.filename);
+      user.profile = profileImagePath;
+    }
 
     await user.save();
-    
-    return res
-      .status(202)
-      .json({ status: true, message: "User updated successfully" });
+
+    return res.status(202).json({ message: "User updated successfully" });
   }
   throw new UnauthorizedError("Password was incorrect!");
+};
+
+
+// Get all users data
+export const getUser = async (req, res) => {
+  const { userId } = req.params;
+  const user = await User.findById(userId);
+  if (user) {
+    return res.status(200).json({ user });
+  }
+  throw NotFoundError("No user found!");
 };

@@ -22,7 +22,7 @@ const UserSchema = new Schema(
       type: String,
       enum: ["not-started", "in-progress", "paused", "completed", "activated"],
       message: "{VALUE} is not supported",
-      default: "not-started",
+      defaultValue: "not-started",
     },
   },
   { timestamps: true }

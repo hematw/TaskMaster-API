@@ -29,10 +29,10 @@ const UserSchema = new Schema(
       type: String,
       required: [true, "Please provide password"],
     },
-    profile:{
-      type:String,
-      defaultValue: "./profiles/demo_profile.jfif"
-    }
+    profile: {
+      type: String,
+      defaultValue: "./profiles/demo_profile.jfif",
+    },
   },
   { timestamps: true }
 );
@@ -50,7 +50,9 @@ UserSchema.methods.isPasswordCorrect = async function (plainPassword) {
 
 UserSchema.methods.generateToken = async function () {
   const jwtSecret = process.env.MY_JWT_SECRET;
-  return await jwt.sign({ _id: this._id, username: this.username }, jwtSecret);
+  return await jwt.sign({ _id: this._id, username: this.username }, jwtSecret, {
+    expiresIn: "30d",
+  });
 };
 
 const User = model("User", UserSchema);

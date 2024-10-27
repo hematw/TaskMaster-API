@@ -18,12 +18,10 @@ export const registerUser = async (req, res) => {
     .status(201)
     .cookie("token", token, cookieOptions)
     .json({
-      success: true,
       token,
       createdUser: { ...createdUser, password: undefined },
     });
 };
-// );
 
 // Login route controller
 export const loginUser = async (req, res) => {
@@ -37,7 +35,6 @@ export const loginUser = async (req, res) => {
       .status(200)
       .cookie("token", token, cookieOptions)
       .json({
-        success: true,
         token,
         user: { ...foundUser.toJSON(), password: undefined },
       });
@@ -50,5 +47,5 @@ export const logoutUser = async (req, res) => {
   return res
     .status(200)
     .clearCookie("token", { ...cookieOptions, expires: undefined })
-    .json({ success: true, message: "Logged out successfully" });
+    .json({ message: "Logged out successfully" });
 };
