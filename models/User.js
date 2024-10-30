@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
@@ -33,6 +33,9 @@ const UserSchema = new Schema(
       type: String,
       defaultValue: "./profiles/demo_profile.jfif",
     },
+    resetToken: {
+      type: Types.ObjectId,
+    },
   },
   { timestamps: true }
 );
@@ -40,6 +43,14 @@ const UserSchema = new Schema(
 UserSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
+
+UserSchema.pre("updateOne", async function (next) {
+  const update = this.getUpdate();
+  if (update && update.password) {
+    update.password = await bcrypt.hash(update.password, 10);
   }
   next();
 });
