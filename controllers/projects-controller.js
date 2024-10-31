@@ -13,3 +13,16 @@ export const getAllProjects = async (req, res) => {
   }
   throw new NotFoundError("No Projects found!");
 };
+
+export const getProject = async (req, res) => {
+  const { id } = req.params;
+
+  const projectWithId = await Project.findById(id)
+    .populate("tasks")
+    .populate("manager");
+
+  if (!projectWithId)
+    throw new NotFoundError(`No projects found with this id ${id}`);
+
+  return res.status(200).json({ project: projectWithId });
+};
