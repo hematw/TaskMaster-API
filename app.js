@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth-router.js";
 import projectRouter from "./routes/project-router.js";
 import usersRouter from "./routes/users-router.js";
+import tasksRouter from "./routes/tasks-router.js";
 configDotenv();
 
 const app = express();
@@ -41,6 +42,8 @@ app.use(authHandler);
 app.use("/api/users", usersRouter);
 
 app.use("/api/projects", projectRouter);
+
+app.use("/api/tasks", tasksRouter);
 
 // Handle Invalid routes
 app.use((req, res) => {

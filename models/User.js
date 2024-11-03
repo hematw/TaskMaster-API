@@ -31,7 +31,7 @@ const UserSchema = new Schema(
     },
     profile: {
       type: String,
-      defaultValue: "./profiles/demo_profile.jfif",
+      default: "./profiles/demo_profile.jfif",
     },
     resetToken: {
       type: Types.ObjectId,

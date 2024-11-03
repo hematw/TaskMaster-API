@@ -37,7 +37,7 @@ export const updateUser = async (req, res) => {
     user.country = country ? country : user.country;
     user.password = newPassword ? newPassword : user.password;
 
-    deleteOldProfile(user.profile)
+    deleteOldProfile(user.profile);
 
     if (req.file) {
       const profileImagePath =
@@ -55,8 +55,7 @@ export const updateUser = async (req, res) => {
   throw new UnauthorizedError("Password was incorrect!");
 };
 
-
-// Get all users data
+// Get user's data by userId (router parameter)
 export const getUser = async (req, res) => {
   const { userId } = req.params;
   const user = await User.findById(userId);
