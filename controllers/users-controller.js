@@ -31,11 +31,11 @@ export const updateUser = async (req, res) => {
   }
 
   if (await user.isPasswordCorrect(currentPassword)) {
-    user.firstName = firstName ? firstName : user.firstName;
-    user.lastName = lastName ? lastName : user.lastName;
-    user.dob = dob ? dob : user.dob;
-    user.country = country ? country : user.country;
-    user.password = newPassword ? newPassword : user.password;
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.dob = dob || user.dob;
+    user.country = country || user.country;
+    user.password = newPassword || user.password;
 
     deleteOldProfile(user.profile);
 

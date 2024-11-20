@@ -7,7 +7,7 @@ import crypto from "crypto";
 import sendMail from "../utils/email-sender.js";
 
 const cookieOptions = {
-  expiresAt: 7 * 24 * 60 * 60 * 1000, // seven days
+  maxAge: 7 * 24 * 60 * 60 * 1000, // seven days
   httpOnly: true,
   secure: true,
 };

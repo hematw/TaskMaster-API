@@ -7,11 +7,18 @@ export const createProject = async (req, res) => {
 };
 
 export const getAllProjects = async (req, res) => {
-  const projects = await Project.find().populate("manager");
-  if (projects.length) {
-    return res.status(200).json({ projects });
-  }
-  throw new NotFoundError("No Projects found!");
+  const page = req.query.page || 1;
+  const size = req.query.size || 10;
+
+  const projects = await Project.find()
+    .skip((page - 1) * size)
+    .limit(size)
+    .populate("manager");
+
+  const count = await Project.countDocuments()
+  const totalPages = Math.ceil(count / 10);
+
+  return res.status(200).json({ projects, totalPages });
 };
 
 export const getProject = async (req, res) => {
@@ -37,12 +44,10 @@ export const getProjectsSummary = async (req, res) => {
     if (project.status === "completed") completedProjects++;
   });
 
-  return res
-    .status(200)
-    .json({
-      completedProjects,
-      notStartedProjects,
-      inProgressProjects,
-      allProjects: allProjects.length,
-    });
+  return res.status(200).json({
+    completedProjects,
+    notStartedProjects,
+    inProgressProjects,
+    allProjects: allProjects.length,
+  });
 };

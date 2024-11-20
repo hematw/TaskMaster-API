@@ -1,24 +1,36 @@
+import BadRequest from "../errors/bad-request.js";
 import NotFoundError from "../errors/not-found.js";
 import Project from "../models/Project.js";
 import Task from "../models/Task.js";
 
 export const createTask = async (req, res) => {
   const { projectId } = req.query;
-  const task = await Task.create({ ...req.body, project:projectId });
+  const task = await Task.create({ ...req.body, project: projectId });
   res.status(201).json({ message: "Task added successfully", task });
 };
 
 // Get all tasks data
 export const getAllTasks = async (req, res) => {
   const { projectId } = req.query;
+  const page = req.query.page || 1;
+  const size = req.query.size || 10;
 
   let searchQuery = {};
   if (projectId) {
     searchQuery = { project: projectId };
+  } else {
+    throw BadRequest("Provide projectId query to get tasks");
   }
 
-  const tasks = await Task.find(searchQuery).populate("assignee");
-  return res.status(200).json({ tasks });
+  const tasks = await Task.find(searchQuery)
+    .populate("assignee")
+    .skip((page - 1) * size)
+    .limit(size);
+
+  const count = await Task.countDocuments(searchQuery)
+  const totalPages = Math.ceil(count / 10);
+
+  return res.status(200).json({ tasks, totalPages });
 };
 
 // Update task
