@@ -37,20 +37,20 @@ export const updateUser = async (req, res) => {
     user.country = country || user.country;
     user.password = newPassword || user.password;
 
-    deleteOldProfile(user.profile);
-
+    
     if (req.file) {
       const profileImagePath =
-        `${req.protocol}://${req.hostname}:${process.env.PORT}` +
-        req.file?.destination
-          .replace("public", "")
-          .concat("/" + req.file?.filename);
+      `${req.protocol}://${req.hostname}:${process.env.PORT}` +
+      req.file?.destination
+      .replace("public", "")
+      .concat("/" + req.file?.filename);
+      deleteOldProfile(user.profile);
       user.profile = profileImagePath;
     }
-
+    
     await user.save();
 
-    return res.status(202).json({ message: "User updated successfully" });
+    return res.status(202).json({ message: "User updated successfully", user });
   }
   throw new UnauthorizedError("Password was incorrect!");
 };
