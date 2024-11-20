@@ -17,12 +17,32 @@ export const getAllProjects = async (req, res) => {
 export const getProject = async (req, res) => {
   const { id } = req.params;
 
-  const projectWithId = await Project.findById(id)
-    .populate("tasks")
-    .populate("manager");
+  const projectWithId = await Project.findById(id).populate("tasks manager");
 
   if (!projectWithId)
     throw new NotFoundError(`No projects found with this id ${id}`);
 
   return res.status(200).json({ project: projectWithId });
+};
+
+export const getProjectsSummary = async (req, res) => {
+  const allProjects = await Project.find();
+  let completedProjects = 0;
+  let inProgressProjects = 0;
+  let notStartedProjects = 0;
+
+  allProjects.forEach((project) => {
+    if (project.status === "not-started") notStartedProjects++;
+    if (project.status === "in-progress") inProgressProjects++;
+    if (project.status === "completed") completedProjects++;
+  });
+
+  return res
+    .status(200)
+    .json({
+      completedProjects,
+      notStartedProjects,
+      inProgressProjects,
+      allProjects: allProjects.length,
+    });
 };
