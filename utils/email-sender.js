@@ -144,11 +144,11 @@ export default async function sendMail(user, url) {
     }
     
     .button-white {
-      background-color: #fff;
-      border-top: 10px solid #fff;
-      border-right: 18px solid #fff;
-      border-bottom: 10px solid #fff;
-      border-left: 18px solid #fff;
+      background-color: #000;
+      border-top: 10px solid #000;
+      border-right: 18px solid #000;
+      border-bottom: 10px solid #000;
+      border-left: 18px solid #000;
     }
     
     @media only screen and (max-width: 500px) {

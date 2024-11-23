@@ -61,8 +61,8 @@ UserSchema.methods.isPasswordCorrect = async function (plainPassword) {
 
 UserSchema.methods.generateToken = async function () {
   const jwtSecret = process.env.MY_JWT_SECRET;
-  const jwtLifetime = eval(process.env.JWT_LIFETIME);
-  console.log("😁😁😁😁",jwtLifetime)
+  const jwtLifetime = process.env.JWT_LIFETIME;
+
   return await jwt.sign({ _id: this._id, username: this.username }, jwtSecret, {
     expiresIn: jwtLifetime,
   });

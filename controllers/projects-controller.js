@@ -15,7 +15,7 @@ export const getAllProjects = async (req, res) => {
     .limit(size)
     .populate("manager");
 
-  const count = await Project.countDocuments()
+  const count = await Project.countDocuments();
   const totalPages = Math.ceil(count / 10);
 
   return res.status(200).json({ projects, totalPages });
@@ -50,4 +50,16 @@ export const getProjectsSummary = async (req, res) => {
     inProgressProjects,
     allProjects: allProjects.length,
   });
+};
+
+export const updateProject = async (req, res) => {
+  const { id } = req.params;
+  const { manager, deadline, description } = req.body;
+
+  const projectWithId = await Project.findByIdAndUpdate(id, { manager, deadline, description });
+
+  if (!projectWithId)
+    throw new NotFoundError(`No projects found with this id ${id}`);
+
+  return res.status(200).json({ message: "Project updated successfully" });
 };

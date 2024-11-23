@@ -9,7 +9,7 @@ const NotificationSchema = new mongoose.Schema({
         type: String,
         required: [true, "Message is required"]
     },
-    isRead: {
+    unread: {
         type: Boolean,
         default: false
     },

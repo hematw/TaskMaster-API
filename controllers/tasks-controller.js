@@ -27,7 +27,7 @@ export const getAllTasks = async (req, res) => {
     .skip((page - 1) * size)
     .limit(size);
 
-  const count = await Task.countDocuments(searchQuery)
+  const count = await Task.countDocuments(searchQuery);
   const totalPages = Math.ceil(count / 10);
 
   return res.status(200).json({ tasks, totalPages });
@@ -35,15 +35,20 @@ export const getAllTasks = async (req, res) => {
 
 // Update task
 export const updateTask = async (req, res) => {
-  const { title } = req.body;
-  const task = await Task.findById(req.task._id);
+  const { id } = req.params;
+  const { title, deadline, description, assignee } = req.body;
+  const task = await Task.findByIdAndUpdate(id, {
+    title,
+    deadline,
+    description,
+    assignee,
+  });
 
   if (!task) {
     throw new NotFoundError("No task found!");
   }
 
-  await task.save();
-  return res.status(202).json({ message: "task updated successfully" });
+  return res.status(202).json({ message: "Task updated successfully" });
 };
 
 // Delete all tasks data
