@@ -14,11 +14,11 @@ const UserSchema = new Schema(
     },
     dob: {
       type: Date,
-      required: [true, "Please provide your date of birth"],
+      // required: [true, "Please provide your date of birth"],
     },
     country: {
       type: String,
-      required: [true, "Please provide country"],
+      // required: [true, "Please provide country"],
     },
     email: {
       type: String,

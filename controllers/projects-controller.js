@@ -39,9 +39,10 @@ export const getProjectsSummary = async (req, res) => {
   let notStartedProjects = 0;
 
   allProjects.forEach((project) => {
-    if (project.status === "not-started") notStartedProjects++;
-    if (project.status === "in-progress") inProgressProjects++;
-    if (project.status === "completed") completedProjects++;
+    if (project.allTasks === project.completedTasks && project.allTasks != 0)
+      completedProjects++;
+    if (project.inProgressTasks > 0) inProgressProjects++;
+    else notStartedProjects++;
   });
 
   return res.status(200).json({
@@ -56,7 +57,11 @@ export const updateProject = async (req, res) => {
   const { id } = req.params;
   const { manager, deadline, description } = req.body;
 
-  const projectWithId = await Project.findByIdAndUpdate(id, { manager, deadline, description });
+  const projectWithId = await Project.findByIdAndUpdate(id, {
+    manager,
+    deadline,
+    description,
+  });
 
   if (!projectWithId)
     throw new NotFoundError(`No projects found with this id ${id}`);

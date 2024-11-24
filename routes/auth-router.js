@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   forgotPassword,
+  googleLogin,
   loginUser,
   logoutUser,
   registerUser,
@@ -14,5 +15,6 @@ authRouter.post("/register", registerUser);
 authRouter.get("/signout", logoutUser);
 authRouter.post("/forgot-password", forgotPassword);
 authRouter.post("/reset-password", resetPassword);
+authRouter.post("/google", googleLogin);
 
 export default authRouter;

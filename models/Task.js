@@ -34,45 +34,4 @@ const TaskSchema = new Schema(
   { timestamps: true }
 );
 
-TaskSchema.post("save", async function () {
-  const projectId = this.project;
-  let fieldToInc = "";
-
-  switch (this.status) {
-    case "completed":
-      fieldToInc = "completedTasks";
-      break;
-    case "in-progress":
-      fieldToInc = "inProgressTasks";
-      break;
-    default:
-      fieldToInc = "allTasks";
-  }
-  try {
-    await Project.findByIdAndUpdate(projectId, {
-      $inc: { [fieldToInc]: 1 },
-    });
-  } catch (error) {
-    return next(error);
-  }
-});
-
-// TaskSchema.post("updateOne", async function (next) {
-//   const projectId = this.project;
-
-//   try {
-//     const project = await Project.findByIdAndUpdate(projectId, {
-//       $inc: { allTasks: 1 },
-//     });
-
-//     if (!project) {
-//       console.error("No project found with ID:", projectId);
-//       return next(new Error("Project not found"));
-//     }
-//   } catch (error) {
-//     return next(error);
-//   }
-//   next();
-// });
-
 export default model("Task", TaskSchema);

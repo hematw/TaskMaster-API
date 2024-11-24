@@ -100,3 +100,33 @@ export const resetPassword = async (req, res) => {
   const requestedUser = await User.updateOne({ _id: user }, { password });
   res.status(202).json({ message: "Password has been successfully changed" });
 };
+
+export const googleLogin = async (req, res) => {
+  const { access_token } = req.body;
+  const response = await fetch(
+    "https://www.googleapis.com/oauth2/v1/userinfo",
+    {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    }
+  );
+  const data = await response.json();
+  console.log(data);
+  const userWithGmail = await User.findOne({ email: data.email });
+  if (!userWithGmail) {
+    userWithGmail = await User.create({
+      email: data.email,
+      firstName: data.given_name,
+      lastName: data.family_name,
+      profile: data.picture,
+      password: data.name,
+    });
+  }
+
+  const token = await userWithGmail.generateToken();
+  res
+    .setCookie("token", token)
+    .status(200)
+    .json({ token, user: userWithGmail, message: "Google login successfully" });
+};
