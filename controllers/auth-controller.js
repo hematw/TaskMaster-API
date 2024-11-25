@@ -126,7 +126,7 @@ export const googleLogin = async (req, res) => {
 
   const token = await userWithGmail.generateToken();
   res
-    .setCookie("token", token)
+    .cookie("token", token, cookieOptions)
     .status(200)
     .json({ token, user: userWithGmail, message: "Google login successfully" });
 };

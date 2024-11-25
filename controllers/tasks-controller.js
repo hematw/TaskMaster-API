@@ -9,14 +9,21 @@ export const createTask = async (req, res) => {
     throw new BadRequest("Provide projectId query param to create Task");
   }
 
-  const task = await Task.create({ ...req.body, project: projectId });
   const project = await Project.findByIdAndUpdate(projectId, {
-    $set: { allTasks: { $inc: 1 } },
+    $inc: { allTasks: 1 },
   });
   if (!project) {
     console.error("No project found with ID:", projectId);
-    return next(new Error("Project not found"));
+    return new NotFoundError("Project not found");
   }
+  const task = await Task.create({
+    title,
+    description,
+    deadline,
+    assignee,
+    project: projectId,
+  });
+
   ++project.allTasks;
   await project.save();
   res.status(201).json({ message: "Task added successfully", task });
@@ -27,10 +34,15 @@ export const getAllTasks = async (req, res) => {
   const { projectId } = req.query;
   const page = req.query.page || 1;
   const size = req.query.size || 10;
+  const search = req.query.search;
 
   let searchQuery = {};
+  if (search) {
+    searchQuery.title = { $regex: search, $options: "i" };
+  }
+
   if (projectId) {
-    searchQuery = { project: projectId };
+    searchQuery.project = projectId;
   } else {
     throw BadRequest("Provide projectId query to get tasks");
   }
@@ -82,37 +94,26 @@ export const updateTask = async (req, res) => {
   project.allTasks = allTasksOfProject.length;
 
   await project.save();
-
-  // let fieldToInc = "";
-
-  // if (task.status == "not-started" && status == "in-progress") {
-  //   fieldToInc = "inProgressTasks";
-  // }
-  // if (task.status == "in-progress" && status == "completed") {
-  //   fieldToInc = "completedTasks";
-  // }
-  //     break;
-  //   case "in-progress":
-  //     break;
-  //   default:
-  //     fieldToInc = "allTasks";
-  // }
-  // await Project.findByIdAndUpdate(projectId, {
-  //   $inc: { [fieldToInc]: 1 },
-  // });
-
   return res.status(202).json({ message: "Task updated successfully" });
 };
 
 // Delete all tasks data
 export const deleteTask = async (req, res) => {
-  const { taskId } = req.params;
+  const { id: taskId } = req.params;
   const task = await Task.findByIdAndDelete(taskId);
   if (!task) {
-    throw NotFoundError("No task found!");
+    throw new NotFoundError("No task found!");
+  }
+
+  const query = { allTasks: -1 };
+
+  if (task.status === "in-progress") {
+    query.inProgressTasks = -1;
+  } else if (task.status === "completed") {
+    query.completedTasks = -1;
   }
   await Project.findByIdAndUpdate(task.project, {
-    $set: { allTasks: { $inc: -1 } },
+    $inc: query,
   });
   return res.status(200).json({ message: "Task deleted successfully", task });
 };

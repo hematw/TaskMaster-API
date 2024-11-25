@@ -18,7 +18,7 @@ const errorHandler = (err, req, res, next) => {
   }
   if (err.name === "CastError") {
     return res.status(404).json({
-      msg: `No item found with id ${err.value}`,
+      message: `No item found with id ${err.value}, or id is invalid`,
     });
   }
   res.status(err.status || 500).json({ message: err.message });

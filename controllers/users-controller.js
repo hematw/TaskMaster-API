@@ -16,8 +16,6 @@ export const getAllUsers = async (req, res) => {
 export const updateUser = async (req, res) => {
   const { firstName, lastName, dob, country, currentPassword, newPassword } =
     req.body;
-  console.log("✨", req.file);
-  console.log(req.body);
   if (!currentPassword) {
     throw new UnauthorizedError(
       "Provide your current password to update user data!"

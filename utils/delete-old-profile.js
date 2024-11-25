@@ -15,7 +15,7 @@ export default function deleteOldProfile(url) {
   try {
     fs.unlinkSync(fileToDeletePath);
   } catch (error) {
-    console.log("Error", error.message);
+    console.error("Error", error.message);
   }
   console.log(fileToDeletePath);
 }

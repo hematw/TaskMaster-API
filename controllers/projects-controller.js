@@ -68,3 +68,14 @@ export const updateProject = async (req, res) => {
 
   return res.status(200).json({ message: "Project updated successfully" });
 };
+
+export const deleteProject = async (req, res) => {
+  const { id } = req.params;
+
+  const projectWithId = await Project.findByIdAndDelete(id);
+
+  if (!projectWithId)
+    throw new NotFoundError(`No projects found with this id ${id}`);
+
+  return res.status(200).json({ message: "Project deleted successfully" });
+};

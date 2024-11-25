@@ -1,7 +1,6 @@
 import Notification from "../models/Notification.js"
 
 export const getAllNotifications = async (req, res) => {
-    console.log(req.user)
     const notifications = await Notification.find({ recipient: req.user._id })
     res.status(200).json({ message: "Notication is here", notifications })
 }

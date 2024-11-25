@@ -67,7 +67,7 @@ const start = async () => {
       console.log(`Server is live and running on port ${port}`)
     );
   } catch (error) {
-    console.log(error.stack);
+    console.error(error.stack);
   }
 };
 start();
