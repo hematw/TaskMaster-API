@@ -63,7 +63,7 @@ UserSchema.methods.generateToken = async function () {
   const jwtSecret = process.env.MY_JWT_SECRET;
   const jwtLifetime = process.env.JWT_LIFETIME;
 
-  return await jwt.sign({ _id: this._id, username: this.username }, jwtSecret, {
+  return await jwt.sign({ _id: this._id, name: `${this.firstName} ${this.lastName}` }, jwtSecret, {
     expiresIn: jwtLifetime,
   });
 };

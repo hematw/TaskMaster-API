@@ -1,8 +1,14 @@
 import NotFoundError from "../errors/not-found.js";
 import Project from "../models/Project.js";
+import Notification from "../models/Notification.js";
 
 export const createProject = async (req, res) => {
   const project = await Project.create(req.body);
+  await Notification.create({
+    title: `New project (${project.title})!`,
+    message: `You has been selected as manager for ${project.title} project by ${req.user.name}`,
+    recipient: project.manager,
+  });
   res.status(201).json({ message: "Project created", project });
 };
 
@@ -13,7 +19,8 @@ export const getAllProjects = async (req, res) => {
   const projects = await Project.find()
     .skip((page - 1) * size)
     .limit(size)
-    .populate("manager");
+    .populate("manager")
+    .sort({ createdAt: -1 });
 
   const count = await Project.countDocuments();
   const totalPages = Math.ceil(count / 10);
@@ -66,6 +73,11 @@ export const updateProject = async (req, res) => {
   if (!projectWithId)
     throw new NotFoundError(`No projects found with this id ${id}`);
 
+  await Notification.create({
+    title: `${projectWithId.title} project has an update`,
+    message: `${req.user.name} updated the ${projectWithId.title} project.`,
+    recipient: projectWithId.manager,
+  });
   return res.status(200).json({ message: "Project updated successfully" });
 };
 
@@ -77,5 +89,10 @@ export const deleteProject = async (req, res) => {
   if (!projectWithId)
     throw new NotFoundError(`No projects found with this id ${id}`);
 
+  await Notification.create({
+    title: "Project removed",
+    message: `${projectWithId.title} project was removed by ${req.user.name}`,
+    recipient: projectWithId.manager,
+  });
   return res.status(200).json({ message: "Project deleted successfully" });
 };

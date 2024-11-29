@@ -2,6 +2,7 @@ import BadRequest from "../errors/bad-request.js";
 import NotFoundError from "../errors/not-found.js";
 import Project from "../models/Project.js";
 import Task from "../models/Task.js";
+import Notification from "../models/Notification.js";
 
 export const createTask = async (req, res) => {
   const { projectId } = req.query;
@@ -26,6 +27,13 @@ export const createTask = async (req, res) => {
 
   ++project.allTasks;
   await project.save();
+
+  await Notification.create({
+    title: `New task (${projectWithId.title})`,
+    message: `${req.user.name} assigned You  ${task.title} task in ${project.title} project.`,
+    recipient: task.assignee,
+  });
+
   res.status(201).json({ message: "Task added successfully", task });
 };
 
@@ -50,7 +58,8 @@ export const getAllTasks = async (req, res) => {
   const tasks = await Task.find(searchQuery)
     .populate("assignee")
     .skip((page - 1) * size)
-    .limit(size);
+    .limit(size)
+    .sort({ createdAt: -1 });
 
   const count = await Task.countDocuments(searchQuery);
   const totalPages = Math.ceil(count / 10);
@@ -94,6 +103,12 @@ export const updateTask = async (req, res) => {
   project.allTasks = allTasksOfProject.length;
 
   await project.save();
+
+  await Notification.create({
+    title: `${task.title} task has an update`,
+    message: `${req.user.name} updated the ${task.title} task in ${project.title} project.`,
+    recipient: task.assignee,
+  });
   return res.status(202).json({ message: "Task updated successfully" });
 };
 
@@ -104,7 +119,11 @@ export const deleteTask = async (req, res) => {
   if (!task) {
     throw new NotFoundError("No task found!");
   }
-
+  await Notification.create({
+    title: `${task.title}task removed`,
+    message: `${task.title} task was removed by ${req.user.name}`,
+    recipient: task.assignee,
+  });
   const query = { allTasks: -1 };
 
   if (task.status === "in-progress") {

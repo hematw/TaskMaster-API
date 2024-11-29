@@ -11,12 +11,12 @@ const NotificationSchema = new mongoose.Schema({
     },
     unread: {
         type: Boolean,
-        default: false
+        default: true
     },
     recipient: {
         type: mongoose.Types.ObjectId,
         required: [true, "Recipient is required"]
     },
-})
+}, {timestamps: true})
 
 export default mongoose.model("Notification", NotificationSchema)
