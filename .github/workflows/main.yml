@@ -1,4 +1,3 @@
-
 name: TaskMaster API CI
 on:
   push:
