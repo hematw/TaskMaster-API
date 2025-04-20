@@ -2,7 +2,7 @@
 name: TaskMaster API CI
 on:
   push:
-    branches: [ci/cid-practice]
+    branches: [ci/cid-practice, main]
 jobs: 
   build:
     runs-on: ubuntu-latest
